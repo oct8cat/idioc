@@ -80,18 +80,10 @@ service.getUser(1, function(err, user) {
 Use `ioc.inject()` to inject dependencies into anonymous module.
 
 ```js
+var ioc = require('./ioc')
 
-var ioc = require('idioc'),
-    assert = require('assert')
-
-ioc.register({
-    libOne: j(__dirname, 'lib/one'),
-    libTwo: j(__dirname, 'lib/two'),
-})
-
-ioc.inject(function(libOne, libTwo) {
+ioc.inject(function(service, store) {
     // Here's your shit, all injected.
-    assert.equal(libOne, libTwo.libOne)
 })
 ```
 
