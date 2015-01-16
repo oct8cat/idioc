@@ -2,47 +2,77 @@
 
 ## Usage
 
-### Vendor modules
+### Example
 
-Prefix module id with `$` to inject core Node.js module or a module from `node_modules`
-
-```js
-var ioc = require('idioc'),
-    assert = require('assert'),
-    $assert = ioc('$assert')
-
-// ioc'ed assert is the same as require'd
-assert.equal($assert, assert)
+#### Directory structure
+```
+ioc.js
+index.js
+lib/
+  |
+  +- store.js
+  +- service.js
 ```
 
-### Local modules
-
-```js
-
-/* lib/one.js */
-module.exports = function() {
-    return {}
-}
-
-/* lib/two.js - injects libOne */
-module.exports = function(libOne) {
-    return {libOne: libOne}
-}
-
-/* index.js */
-var ioc = require('idioc'),
-    assert = require('assert'),
-    j = require('path').join
+#### ioc.js
+```javascript
+/**
+ * Container configuration.
+ * Registers local modules `service` and `store`.
+ */
+var ioc = module.exports = require('ioc'),
+    j = require('path').join,
+    env = process.env.NODE_ENV || 'development'
 
 ioc.register({
-    libOne: j(__dirname, 'lib/one'),
-    libTwo: j(__dirname, 'lib/two'),
+    service: j(__dirname, 'lib/service'),
+
+    // Mocking for test, yay!
+    store: j(__dirname, env === 'test' ? 'mocks/store' : 'lib/store')
 })
+```
 
-var libTwo = ioc('libTwo')
+#### lib/store.js
+```javascript
+/**
+ * Exports our store module.
+ * Note that you can inject core/vendor module by prefixing its id with `$`.
+ * @param {object} $mongoose Mongoose injection.
+ */
+module.exports = function($mongoose) {
+    return {
+        // Retrieves something by ID using mongoose.findById()
+        getSomething: function(what, cb) {
+            $mongoose.model(what).findById(id, cb)
+        }
+    }
+}
+```
 
-// libOne is here, injected!
-assert(libTwo.libOne)
+#### lib/service.js
+```js
+/**
+ * Exports out service module.
+ * @param {object} store Store injection.
+ */
+module.exports = function(store) {
+    return {
+        // Retrieves user by ID using store.getSomething()
+        getUser: function(id, cb) {
+            store.getSomething('User', id, cb)
+        }
+    }
+}
+```
+
+#### index.js
+```js
+var ioc = require('./ioc'),
+    service = ioc('service')
+
+service.getUser(1, function(err, user) {
+    // service.getUser -> store.getSomething -> mongoose.findById
+})
 ```
 
 ### Anonymous modules
