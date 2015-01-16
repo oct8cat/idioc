@@ -1,0 +1,26 @@
+{
+  "name": "idioc",
+  "version": "1.0.0",
+  "description": "IoC for idiots (by idiots).",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha test/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/oct8cat/idioc"
+  },
+  "keywords": [
+    "ioc",
+    "di"
+  ],
+  "author": "Tako Neko <oct8cat@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/oct8cat/idioc/issues"
+  },
+  "homepage": "https://github.com/oct8cat/idioc"
+}
