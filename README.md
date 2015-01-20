@@ -1,3 +1,5 @@
+[![wercker status](https://app.wercker.com/status/375f5818b1b51a0d159de3e17adf8d39/s "wercker status")](https://app.wercker.com/project/bykey/375f5818b1b51a0d159de3e17adf8d39)
+
 # idioc - Inversion of control for idiots (by idiots).
 
 ## Usage
