@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "mocha test/test.js"
+    "test": "NODE_ENV=test node_modules/mocha/bin/mocha test/test.js"
   },
   "repository": {
     "type": "git",
@@ -22,5 +22,8 @@
   "bugs": {
     "url": "https://github.com/oct8cat/idioc/issues"
   },
-  "homepage": "https://github.com/oct8cat/idioc"
+  "homepage": "https://github.com/oct8cat/idioc",
+  "devDependencies": {
+    "mocha": "^2.1.0"
+  }
 }
