@@ -6,41 +6,71 @@ var assert = require('assert'),
     ioc = require('../index'),
     j = require('path').join
 
+var pathsLen = function() { return Object.keys(ioc.getPaths()).length },
+    cfg = {
+        libA: j(__dirname, 'assets/lib/a'),
+        libB: j(__dirname, 'assets/lib/b'),
+        libC: j(__dirname, 'assets/lib/c'), // This one isn't exists
+    },
+    cfgLen = Object.keys(cfg).length
+
+var notRegRE = /module not registered/i,
+    notFoundRE = /cannot find module/i
+
 describe('ioc', function() {
-    var _libA, _libB
-
-    before(function() {
-        ioc.register({
-            libA: j(__dirname, 'assets/lib/a'),
-            libB: j(__dirname, 'assets/lib/b'),
-            libC: j(__dirname, 'assets/lib/c'), // This one is not exists.
+    describe('.register()', function() {
+        beforeEach(function() { ioc.unregisterAll() })
+        it('should register specified modules', function() {
+            assert.equal(pathsLen(), 0)
+            ioc.register(cfg)
+            assert.equal(pathsLen(), cfgLen)
         })
-        _libA = ioc('libA')
-        _libB = ioc('libB')
     })
-
-    it('should deal with vendor modules', function() {
-        assert.strictEqual(ioc('$assert'), assert)
+    describe('.unregister()', function() {
+        beforeEach(function() { ioc.unregisterAll().register(cfg) })
+        it('should unregister specified modules', function() {
+            assert.equal(pathsLen(), cfgLen)
+            ioc.unregister('libB')
+            assert.equal(pathsLen(), cfgLen - 1)
+            assert.throws(function() { ioc('libB') }, notRegRE)
+            assert.doesNotThrow(function() { ioc('libA') })
+        })
     })
-
-    it('should deal with local modules', function() {
-        assert.strictEqual(_libB.libA, _libA)
+    describe('.unregisterAll()', function() {
+        beforeEach(function() { ioc.unregisterAll().register(cfg) })
+        it('should unregister all modules', function() {
+            assert.equal(pathsLen(), cfgLen)
+            ioc.unregisterAll()
+            assert.equal(pathsLen(), 0)
+        })
     })
-
-    it('should deal with unregistered modules', function() {
-        assert.throws(function() { ioc('unregistered') }, /module not registered/i)
-    })
-
-    it('should deal with nonexistent modules', function() {
-        assert.throws(function() { ioc('libC') }, /cannot find module/i)
-    })
-
     describe('.inject()', function() {
-        it('should deal with anonymous modules', function() {
+        beforeEach(function() { ioc.unregisterAll().register(cfg) })
+        it('should inject deps into anonymous module', function() {
             ioc.inject(function(libA, libB) {
-                assert.strictEqual(libA, _libA)
-                assert.strictEqual(libB, _libB)
+                assert(libA)
+                assert(libB)
+                assert.equal(libA, libB.libA)
             })
         })
+        it('should fail on nonexist dependencies', function() {
+            assert.throws(function() {
+                ioc.inject(function(libC) {  })
+            }, notFoundRE)
+        })
+    })
+
+    beforeEach(function() { ioc.unregisterAll().register(cfg) })
+    it('should deal with named modules', function() {
+        var libA = ioc('libA'),
+            libB = ioc('libB')
+        assert(libA)
+        assert(libB)
+        assert.equal(libA, libB.libA)
+    })
+    it('should fail on nonexist modules', function() {
+        assert.throws(function() {
+            ioc.inject(function(libC) {  })
+        }, notFoundRE)
     })
 })
