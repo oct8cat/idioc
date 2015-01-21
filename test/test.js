@@ -1,6 +1,6 @@
 'use strict';
 
-/* global describe, before, it */
+/* global describe, beforeEach, it */
 
 var assert = require('assert'),
     ioc = require('../index'),
