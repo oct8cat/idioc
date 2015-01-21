@@ -53,6 +53,13 @@ describe('ioc', function() {
                 assert.equal(libA, libB.libA)
             })
         })
+        it('should deal with "long" (["libA", "libB", function(a, b) { . . . }]) form of injection', function() {
+            ioc.inject(['libA', 'libB', function(a, b) {
+                assert(a)
+                assert(b)
+                assert.equal(a, b.libA)
+            }])
+        })
         it('should fail on nonexist dependencies', function() {
             assert.throws(function() {
                 ioc.inject(function(libC) {  })
