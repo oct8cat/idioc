@@ -1,6 +1,6 @@
 {
   "name": "idioc",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "IoC for idiots (by idiots).",
   "main": "index.js",
   "directories": {
