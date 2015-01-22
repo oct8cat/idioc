@@ -14,8 +14,9 @@ var pathsLen = function() { return Object.keys(ioc.getPaths()).length },
     },
     cfgLen = Object.keys(cfg).length
 
-var notRegRE = /module not registered/i,
-    notFoundRE = /cannot find module/i
+var notRegisteredRE = /module not registered/i,
+    notFoundRE = /cannot find module/i,
+    invalidInjRE = /invalid injection/i
 
 describe('ioc', function() {
     describe('.register()', function() {
@@ -32,7 +33,7 @@ describe('ioc', function() {
             assert.equal(pathsLen(), cfgLen)
             ioc.unregister('libB')
             assert.equal(pathsLen(), cfgLen - 1)
-            assert.throws(function() { ioc('libB') }, notRegRE)
+            assert.throws(function() { ioc('libB') }, notRegisteredRE)
             assert.doesNotThrow(function() { ioc('libA') })
         })
     })
@@ -46,24 +47,25 @@ describe('ioc', function() {
     })
     describe('.inject()', function() {
         beforeEach(function() { ioc.unregisterAll().register(cfg) })
-        it('should inject deps into anonymous module', function() {
+        it('should deal with short injection form', function() {
             ioc.inject(function(libA, libB) {
                 assert(libA)
                 assert(libB)
                 assert.equal(libA, libB.libA)
             })
         })
-        it('should deal with "long" (["libA", "libB", function(a, b) { . . . }]) form of injection', function() {
+        it('should deal with long injection form', function() {
             ioc.inject(['libA', 'libB', function(a, b) {
                 assert(a)
                 assert(b)
                 assert.equal(a, b.libA)
             }])
         })
+        it('should notify about invalid injection form.', function() {
+            assert.throws(function() { ioc.inject(null) }, invalidInjRE)
+        })
         it('should fail on nonexist dependencies', function() {
-            assert.throws(function() {
-                ioc.inject(function(libC) {  })
-            }, notFoundRE)
+            assert.throws(function() { ioc.inject(function(libC) {  }) }, notFoundRE)
         })
     })
 
