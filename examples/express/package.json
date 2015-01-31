@@ -1,0 +1,22 @@
+{
+  "name": "idioc-examples-express",
+  "version": "0.0.0",
+  "description": "Example of idioc-powered express application.",
+  "main": "index.js",
+  "scripts": {
+    "test": "NODE_ENV=test node_modules/mocha/bin/mocha test"
+  },
+  "author": "Tako Neko <oct8cat@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.11.1"
+  },
+  "devDependencies": {
+    "mocha": "^2.1.0",
+    "supertest": "^0.15.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/oct8cat/idioc"
+  }
+}
